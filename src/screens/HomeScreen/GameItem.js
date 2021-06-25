@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {useNavigation} from '@react-navigation/native';
 import {
   Text,
   View,
@@ -8,44 +9,39 @@ import {
   TouchableOpacity,
 } from 'react-native';
 const {width, height} = Dimensions.get('screen');
-import {navigationWithoutProps} from '../../navigation/rootNavigation';
 
-export default class GameItem extends Component {
-  render() {
-    const {gameItem} = this.props;
-    return (
-      <TouchableOpacity
-        onPress={() =>
-          navigationWithoutProps('DetailScreen', {id: gameItem.id})
-        }>
+const GameItem = ({gameItem}) => {
+  const navigation = useNavigation();
+  return (
+    <TouchableOpacity
+      onPress={() => navigation.navigate('DetailScreen', {id: gameItem.id})}>
+      <View>
         <View>
-          <View>
-            <Image
-              style={styles.gameBanner}
-              source={{uri: gameItem.preview[0]}}
-            />
-          </View>
-          <View
-            style={[
-              styles.gameInfo,
-              {backgroundColor: gameItem.backgroundColor},
-            ]}>
-            <Image source={{uri: gameItem.icon}} style={styles.gameIcon} />
-            <View style={styles.infoContent}>
-              <Text
-                style={[styles.textColor, {fontWeight: 'bold', fontSize: 18}]}>
-                {gameItem.title}
-              </Text>
-              <Text style={[styles.textColor, {opacity: 0.7}]}>
-                {gameItem.subTitle}
-              </Text>
-            </View>
+          <Image
+            style={styles.gameBanner}
+            source={{uri: gameItem.preview[0]}}
+          />
+        </View>
+        <View
+          style={[
+            styles.gameInfo,
+            {backgroundColor: gameItem.backgroundColor},
+          ]}>
+          <Image source={{uri: gameItem.icon}} style={styles.gameIcon} />
+          <View style={styles.infoContent}>
+            <Text
+              style={[styles.textColor, {fontWeight: 'bold', fontSize: 18}]}>
+              {gameItem.title}
+            </Text>
+            <Text style={[styles.textColor, {opacity: 0.7}]}>
+              {gameItem.subTitle}
+            </Text>
           </View>
         </View>
-      </TouchableOpacity>
-    );
-  }
-}
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   gameBanner: {
@@ -76,3 +72,5 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 });
+
+export default GameItem;

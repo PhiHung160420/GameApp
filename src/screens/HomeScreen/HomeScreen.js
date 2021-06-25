@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, {Component} from 'react';
+import React, {Component, useEffect} from 'react';
 import {
   SafeAreaView,
   Text,
@@ -13,75 +13,74 @@ import GameItem from './GameItem';
 import {Avatar} from '../../assets/index';
 import globalStyle from '../../theme/globalStyle';
 import {BackgroundView} from '../../components/index';
-import {connect} from 'react-redux';
+import {connect, useDispatch, useSelector} from 'react-redux';
 import {getSetGameDataSuccess} from '../../redux/actions/gameAction';
 import {callGameAPI} from '../../api/gameAPI';
-
+import {getGamesState} from '../../redux/selectors/gameSelector';
+import {changeLoading} from '../../redux/actions/loadingAction';
 const {width, height} = Dimensions.get('screen');
 
-class HomeScreen extends Component {
-  componentDidMount() {
-    this.props.getGameData();
-  }
+const HomeScreen = () => {
+  const game = useSelector(getGamesState);
+  const isLoading = useSelector(state => state.loadingReducer.isLoading);
+  const dispatch = useDispatch();
 
-  _renderItem = ({item}) => <GameItem gameItem={item} />;
+  useEffect(() => {
+    dispatch(changeLoading(true));
+    dispatch(getSetGameDataSuccess());
+  }, []);
 
-  render() {
-    const {game} = this.props;
-    return (
-      <BackgroundView>
-        <View style={styles.headerStyle}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <View style={{flexDirection: 'column'}}>
-              <View style={{flexDirection: 'row'}}>
-                <Text style={{fontSize: 25, color: 'white', fontWeight: '300'}}>
-                  Hello
-                </Text>
-                <Text> </Text>
-                <Text style={{fontSize: 25, fontWeight: '600', color: 'white'}}>
-                  CyberSort,
-                </Text>
-              </View>
-              <Text style={{fontSize: 15, fontWeight: '300', color: 'white'}}>
-                Best game for today
+  const renderItem = ({item}) => {
+    return <GameItem gameItem={item} />;
+  };
+
+  return (
+    <BackgroundView>
+      <View style={styles.headerStyle}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
+          <View style={{flexDirection: 'column'}}>
+            <View style={{flexDirection: 'row'}}>
+              <Text style={{fontSize: 25, color: 'white', fontWeight: '300'}}>
+                Hello
+              </Text>
+              <Text> </Text>
+              <Text style={{fontSize: 25, fontWeight: '600', color: 'white'}}>
+                CyberSort,
               </Text>
             </View>
-            <View style={styles.backIcon}>
-              <Image source={Avatar} style={styles.iconHeader} />
-            </View>
+            <Text style={{fontSize: 15, fontWeight: '300', color: 'white'}}>
+              Best game for today
+            </Text>
+          </View>
+          <View style={styles.backIcon}>
+            <Image source={Avatar} style={styles.iconHeader} />
           </View>
         </View>
-        {!!game.length && (
-          <FlatList
-            data={game}
-            renderItem={this._renderItem}
-            contentContainerStyle={{paddingBottom: 100, paddingTop: 20}}
-            ItemSeparatorComponent={() => <View style={{height: 80}}></View>}
-          />
-        )}
-      </BackgroundView>
-    );
-  }
-}
-
-const mapStateToProps = state => {
-  return {
-    game: state.GameReducer.games,
-  };
+      </View>
+      {!!game.length && (
+        <FlatList
+          data={game}
+          renderItem={renderItem}
+          contentContainerStyle={{paddingBottom: 100, paddingTop: 20}}
+          ItemSeparatorComponent={() => <View style={{height: 80}}></View>}
+        />
+      )}
+    </BackgroundView>
+  );
 };
 
-const mapDispatchToProps = dispatch => {
+/* const mapDispatchToProps = dispatch => {
   return {
     getGameData: () => dispatch(getSetGameDataSuccess()),
   };
-};
+}; */
 
-export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
+export default HomeScreen;
 
 const styles = StyleSheet.create({
   container: {

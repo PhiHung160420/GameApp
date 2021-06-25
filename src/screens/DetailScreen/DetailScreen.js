@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, {Component} from 'react';
+import React, {Component, useEffect} from 'react';
 import {
   Text,
   View,
@@ -14,21 +14,20 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import mapIP from '../../utils/common';
 import {BackgroundView} from '../../components/index';
 import {getSetGameDetailSuccess} from '../../redux/actions/gameAction';
-import {connect} from 'react-redux';
+import {connect, useDispatch, useSelector} from 'react-redux';
+import {getGameDetail} from '../../redux/selectors/gameSelector';
 
 const {width, height} = Dimensions.get('screen');
 
-class DetailScreen extends Component {
-  renderIcon = () => {
+const DetailScreen = ({navigation, route}) => {
+  const renderIcon = () => {
     let icons = [];
     for (i = 0; i < 5; i++) {
       icons.push(
         <Ionicons
           key={i}
           name="ios-star"
-          color={
-            Math.floor(this.props.gameDetail.rating) > i ? '#add8e6' : '#ddd'
-          }
+          color={Math.floor(gameDetail.rating) > i ? '#add8e6' : '#ddd'}
           size={20}
           style={{marginLeft: 5}}
         />,
@@ -37,96 +36,96 @@ class DetailScreen extends Component {
     return icons;
   };
 
-  componentDidMount() {
-    this.props.setGameDetail(this.props.route.params.id);
-  }
+  const gameDetail = useSelector(getGameDetail);
 
-  render() {
-    const {gameDetail: game} = this.props;
-    return (
-      <BackgroundView style={{backgroundColor: game.backgroundColor}}>
-        {!!game.title && (
-          <>
-            <View style={styles.containerTop}>
-              <Image
-                style={styles.imageBanner}
-                source={{uri: game.preview[0]}}
-              />
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getSetGameDetailSuccess(route.params.id));
+  }, []);
+
+  return (
+    <BackgroundView style={{backgroundColor: gameDetail.backgroundColor}}>
+      {!!gameDetail.title && (
+        <>
+          <View style={styles.containerTop}>
+            <Image
+              style={styles.imageBanner}
+              source={{uri: gameDetail.preview[0]}}
+            />
+          </View>
+          <TouchableOpacity
+            style={{position: 'absolute', left: 10, top: 40}}
+            onPress={() => navigation.goBack()}>
+            <View
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                backgroundColor: 'gray',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Ionicons name="ios-close" size={40} color="white" />
             </View>
-            <TouchableOpacity
-              style={{position: 'absolute', left: 10, top: 40}}
-              onPress={() => this.props.navigation.goBack()}>
-              <View
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                  backgroundColor: 'gray',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <Ionicons name="ios-close" size={40} color="white" />
+          </TouchableOpacity>
+          <View style={styles.containerBottom}>
+            <View style={styles.contentContainer}>
+              <Image
+                style={styles.imageContent}
+                source={{uri: gameDetail.icon}}
+              />
+              <View style={styles.infoItem}>
+                <Text style={styles.itemTitle}>{gameDetail.title}</Text>
+                <Text style={styles.itemSubTitle}>{gameDetail.subTitle}</Text>
               </View>
-            </TouchableOpacity>
-            <View style={styles.containerBottom}>
-              <View style={styles.contentContainer}>
-                <Image style={styles.imageContent} source={{uri: game.icon}} />
-                <View style={styles.infoItem}>
-                  <Text style={styles.itemTitle}>{game.title}</Text>
-                  <Text style={styles.itemSubTitle}>{game.subTitle}</Text>
-                </View>
-                <View style={styles.borderIcon}>
-                  <Ionicons
-                    name="cloud-download-outline"
-                    color="white"
-                    size={25}
-                  />
-                </View>
-              </View>
-              <View style={styles.previewContainer}>
-                <View style={{flexDirection: 'row'}}>{this.renderIcon()}</View>
-                <View>
-                  <Text style={{fontSize: 18, color: 'white', opacity: 0.7}}>
-                    {game.age}
-                  </Text>
-                </View>
-                <View>
-                  <Text style={{fontSize: 18, color: 'white', opacity: 0.7}}>
-                    Game of the day
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.listImageContainer}>
-                <FlatList
-                  data={game.preview}
-                  keyExtractor={game => game}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{marginLeft: 20, marginRight: 20}}
-                  snapToInterval={width - 20}
-                  decelerationRate="fast"
-                  ItemSeparatorComponent={() => (
-                    <View style={{width: 10}}></View>
-                  )}
-                  renderItem={({item}) => {
-                    return (
-                      <Image style={styles.imageTag} source={{uri: item}} />
-                    );
-                  }}
+              <View style={styles.borderIcon}>
+                <Ionicons
+                  name="cloud-download-outline"
+                  color="white"
+                  size={25}
                 />
               </View>
-              <View style={styles.descriptContainer}>
-                <Text style={styles.descriptStyle}>{game.description}</Text>
+            </View>
+            <View style={styles.previewContainer}>
+              <View style={{flexDirection: 'row'}}>{renderIcon}</View>
+              <View>
+                <Text style={{fontSize: 18, color: 'white', opacity: 0.7}}>
+                  {gameDetail.age}
+                </Text>
+              </View>
+              <View>
+                <Text style={{fontSize: 18, color: 'white', opacity: 0.7}}>
+                  Game of the day
+                </Text>
               </View>
             </View>
-          </>
-        )}
-      </BackgroundView>
-    );
-  }
-}
+            <View style={styles.listImageContainer}>
+              <FlatList
+                data={gameDetail.preview}
+                keyExtractor={gameDetail => gameDetail}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{marginLeft: 20, marginRight: 20}}
+                snapToInterval={width - 20}
+                decelerationRate="fast"
+                ItemSeparatorComponent={() => <View style={{width: 10}}></View>}
+                renderItem={({item}) => {
+                  return <Image style={styles.imageTag} source={{uri: item}} />;
+                }}
+              />
+            </View>
+            <View style={styles.descriptContainer}>
+              <Text style={styles.descriptStyle}>{gameDetail.description}</Text>
+            </View>
+          </View>
+        </>
+      )}
+    </BackgroundView>
+  );
+};
 
-const mapStateToProps = state => {
+/* const mapStateToProps = state => {
   return {
     gameDetail: state.GameReducer.gameDetail,
   };
@@ -136,9 +135,11 @@ const mapDispatchToProps = dispatch => {
   return {
     setGameDetail: id => dispatch(getSetGameDetailSuccess(id)),
   };
-};
+}; */
 
-export default connect(mapStateToProps, mapDispatchToProps)(DetailScreen);
+//export default connect(mapStateToProps, mapDispatchToProps)(DetailScreen);
+
+export default DetailScreen;
 
 const styles = StyleSheet.create({
   containerTop: {flex: 2},

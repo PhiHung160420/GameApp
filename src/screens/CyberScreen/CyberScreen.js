@@ -1,18 +1,16 @@
-import React, {Component} from 'react';
+import React, {Component, useEffect} from 'react';
 import axios from 'axios';
 import {Text, View, StyleSheet, Image, SafeAreaView} from 'react-native';
 import {Alto_0, Avatar} from '../../assets/index';
 import {FlatList, TouchableOpacity} from 'react-native-gesture-handler';
 import globalStyle from '../../theme/globalStyle';
-import {connect} from 'react-redux';
+import {connect, useSelector} from 'react-redux';
 import {getSetGameDataSuccess} from '../../redux/actions/gameAction';
 
-class CyberScreen extends Component {
-  componentDidMount() {
-    this.props.setGameData();
-  }
+const CyberScreen = () => {
+  const game = useSelector(state => state.GameReducer.games);
 
-  _renderItem = ({item}) => (
+  const renderItem = ({item}) => (
     <View style={styles.listStyle}>
       <View style={{flexDirection: 'row', marginLeft: 10}}>
         <Image source={{uri: item.icon}} style={styles.imageItem} />
@@ -32,78 +30,73 @@ class CyberScreen extends Component {
     </View>
   );
 
-  render() {
-    const {game} = this.props;
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.containerTop}>
-          <View style={styles.headerStyle}>
-            <View style={styles.avatarContainer}>
-              <Image source={Avatar} style={styles.avatar} />
-            </View>
-            <Text style={{color: 'white', fontWeight: '500', marginTop: 10}}>
-              Cyber Sort
-            </Text>
-            <View style={{flexDirection: 'row', marginTop: 10}}>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: '#6495ed',
-                  paddingVertical: 5,
-                  paddingHorizontal: 10,
-                  borderRadius: 15,
-                }}>
-                <Text style={{color: 'white', fontWeight: '500'}}>
-                  Pro Gamer
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: '#ffa500',
-                  paddingVertical: 5,
-                  paddingHorizontal: 10,
-                  borderRadius: 15,
-                  marginLeft: 10,
-                }}>
-                <Text style={{fontWeight: '500'}}>Pro Coder</Text>
-              </TouchableOpacity>
-            </View>
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.containerTop}>
+        <View style={styles.headerStyle}>
+          <View style={styles.avatarContainer}>
+            <Image source={Avatar} style={styles.avatar} />
+          </View>
+          <Text style={{color: 'white', fontWeight: '500', marginTop: 10}}>
+            Cyber Sort
+          </Text>
+          <View style={{flexDirection: 'row', marginTop: 10}}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: '#6495ed',
+                paddingVertical: 5,
+                paddingHorizontal: 10,
+                borderRadius: 15,
+              }}>
+              <Text style={{color: 'white', fontWeight: '500'}}>Pro Gamer</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                backgroundColor: '#ffa500',
+                paddingVertical: 5,
+                paddingHorizontal: 10,
+                borderRadius: 15,
+                marginLeft: 10,
+              }}>
+              <Text style={{fontWeight: '500'}}>Pro Coder</Text>
+            </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.containerMiddle}>
-          <View style={styles.statisStyle}>
+      </View>
+      <View style={styles.containerMiddle}>
+        <View style={styles.statisStyle}>
+          <View style={{flexDirection: 'row'}}>
+            <View style={{flexDirection: 'row', marginRight: 20}}>
+              <Text style={styles.numberStatis}>250</Text>
+              <Text style={[styles.textStatis, globalStyle.textColor]}>
+                Games
+              </Text>
+            </View>
             <View style={{flexDirection: 'row'}}>
-              <View style={{flexDirection: 'row', marginRight: 20}}>
-                <Text style={styles.numberStatis}>250</Text>
-                <Text style={[styles.textStatis, globalStyle.textColor]}>
-                  Games
-                </Text>
-              </View>
-              <View style={{flexDirection: 'row'}}>
-                <Text style={styles.numberStatis}>4</Text>
-                <Text style={[styles.textStatis, globalStyle.textColor]}>
-                  Purchases
-                </Text>
-              </View>
-            </View>
-            <View style={{marginTop: 30}}>
-              <Text style={styles.titleList}>Purchased Games</Text>
+              <Text style={styles.numberStatis}>4</Text>
+              <Text style={[styles.textStatis, globalStyle.textColor]}>
+                Purchases
+              </Text>
             </View>
           </View>
+          <View style={{marginTop: 30}}>
+            <Text style={styles.titleList}>Purchased Games</Text>
+          </View>
         </View>
-        <View style={styles.containerBottom}>
-          <FlatList
-            data={game}
-            keyExtractor={item => item.id}
-            renderItem={this._renderItem}
-            ItemSeparatorComponent={() => <View style={{height: 10}}></View>}
-          />
-        </View>
-      </SafeAreaView>
-    );
-  }
-}
+      </View>
+      <View style={styles.containerBottom}>
+        <FlatList
+          data={game}
+          keyExtractor={item => item.id}
+          renderItem={renderItem}
+          ItemSeparatorComponent={() => <View style={{height: 10}}></View>}
+        />
+      </View>
+    </SafeAreaView>
+  );
+};
 
-const mapStateToProps = state => {
+/* const mapStateToProps = state => {
   return {
     game: state.GameReducer.games,
   };
@@ -115,7 +108,9 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(CyberScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(CyberScreen); */
+
+export default CyberScreen;
 
 const styles = StyleSheet.create({
   container: {
